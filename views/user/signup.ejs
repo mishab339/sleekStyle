@@ -1,4 +1,5 @@
-<link rel="stylesheet" href="/localcss/auth.css">
+<link rel="stylesheet" href="/localcss/otp.css">
+
 <style>
 .side-image{
     background-image: url('../localimages/signup.jpg');
@@ -37,7 +38,7 @@
                         <label for="password">Confirm Password</label>
                     </div>
                     <div class="input-field">
-                        <input type="submit" class="submit" value="Sign Up">
+                        <input type="submit" class="submit" value="Sign Up"  id="open-modal">
                     </div>
                     <div class="signin">
                          <span>Already have an account? <a href="/user-login">Login Here</a></span>
@@ -45,5 +46,26 @@
                  </div>
             </div>
         </div>
+        <section class="otp-modal otp-container">
+            <div class="otp-modal__container" id="modal-container">
+                <div class="otp-modal__content">
+                    <form action="" class="otp-form">
+                        <span class="otp-main-heading">Enter otp</span>
+                        <p class="otp-subheading">we have sent a verification code to your mobile number</p>
+                        <div class="input-container">
+                            <input type="text" maxlength="1" class="otp-input">
+                            <input type="text" maxlength="1" class="otp-input">
+                            <input type="text" maxlength="1" class="otp-input">
+                            <input type="text" maxlength="1" class="otp-input">
+                        </div>
+                        <a class="verify-btn" type="submit">Verify</a>
+                        <button class="exit-btn close-modal"><i class="fa-solid fa-x"></i></button>
+                        <p class="resend-note">Didn't receive the code? <a class="resend-btn">Resend code</a></p>
+                    </form> 
+                </div>
+            </div>
+        </section>
     </div>
 </div>
+
+<script src="/localejs/otp.js"></script>
