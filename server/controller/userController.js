@@ -45,10 +45,10 @@ module.exports = {
         res.render('./user/contact',{title: 'Sleek Style - Contact',isHome:false,isLocal:false});
     },
     userLogin:async (req,res)=>{
-        res.render('./user/login',{title: 'Sleek Style - login',isHome:false,isLocal:true});
+        res.render('./user/login',{title: 'Sleek Style - login',isHome:false,isLocal:false});
     },
     userSignup:async (req,res)=>{
-        res.render('./user/signup',{title: 'Sleek Style - signup',isHome:false,isLocal:true});
+        res.render('./user/signup',{title: 'Sleek Style - signup',isHome:false,isLocal:false});
     }
     
     }
