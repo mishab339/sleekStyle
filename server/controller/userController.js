@@ -1,7 +1,20 @@
-require('../model/database');
+require('../config/database');
+
+//mongodb user model
+const UserModel = require('../model/userModel');
+
+//mongodb userEmailVerification model
+const UserVerification = require('../model/userVerificationModel');
+
+//mongodb userOTPVerification model
+const UserOTPVerification = require("../model/userOTPVerificationModel")
+
+const bcrypt = require('bcrypt');
+
+//email verification funcions 
+const {sendVerificationEmail,sendOTPVerificationEmail} = require("../../helperse/nodemailer");
 
 module.exports = {    
-
     /**
      * GET /
      * Show Home page
@@ -21,34 +34,274 @@ module.exports = {
      * Show My Cart
      */
     cart: async (req,res)=>{
-        res.render('./user/shoping-cart',{title: 'Sleek Style - Shoping Cart',isHome:false,isLocal:false});
+        res.render('./user/shoping-cart',{title: 'Sleek Style - Shoping Cart',isHome:false});
     },
     /**
     * GET /blog
     * Show Blog page
     */
     blog: async (req,res)=>{
-       res.render('./user/blog',{title: 'Sleek Style - Blog',isHome:false,isLocal:false});
+       res.render('./user/blog',{title: 'Sleek Style - Blog',isHome:false});
     },
     /**
      * GET /about
      * Show About page
      */
     about: async (req,res)=>{
-        res.render('./user/about',{title: 'Sleek Style - About',isHome:false,isLocal:false});
+        res.render('./user/about',{title: 'Sleek Style - About',isHome:false});
     },
     /**
      * GET /contact
      * Show contact page
      */
     contact: async (req,res)=>{
-        res.render('./user/contact',{title: 'Sleek Style - Contact',isHome:false,isLocal:false});
+        res.render('./user/contact',{title: 'Sleek Style - Contact',isHome:false});
     },
+    /**
+     * GET /user-login
+     * Show Login page
+     */
     userLogin:async (req,res)=>{
-        res.render('./user/login',{title: 'Sleek Style - login',isHome:false,isLocal:false});
+        res.render('./user/login',{title: 'Sleek Style - login',isHome:false});
     },
+    /**
+     * GET /signup
+     * Show signup page
+     */
     userSignup:async (req,res)=>{
-        res.render('./user/signup',{title: 'Sleek Style - signup',isHome:false,isLocal:false});
-    }
-    
+        res.render('./user/signup',{title: 'Sleek Style - signup',isHome:false});
+    },
+    /** 
+     * GET /account-detials 
+     * Show ueser profile page
+     */
+    accountDetails: async(req,res)=>{
+        res.render('./user/account-details',{title: 'Sleek Style - signup',isHome:false})
+    },
+    /** 
+     * POST /user-signup 
+     * post user details
+     */
+    userSignupPost: async(req,res)=>{
+      try {
+        const userData = req.body;
+        await UserModel.findOne({email:userData.email})
+        .then(async (result)=>{
+          if(result){
+            // res.redirect('/user-signup');
+            res.json({
+              status:"FAILED",
+              message:"user is already exists"
+            })
+          }else{
+           //FOR HASHING THE PASSWORD USE BCRYPT
+
+           const saltRound = 10 //NUMBER OF SALT ROUND FOR BCRYPT
+           const hashPassword = await bcrypt.hash(userData.password,saltRound);
+           userData.password = hashPassword;
+           userData.verified = false;
+           await UserModel.insertMany(userData)
+           .then((result)=>{
+
+            //handle account verification
+            // sendVerificationEmail(result[0],res);
+            sendOTPVerificationEmail(result[0],res);
+
+           })
+           .catch(error=>{
+              console.log(error);
+              res.json({
+                status:"FAILED",
+                message:"error occure while saving the user account"
+              })
+           });
+          //  res.redirect('/user-signup');
+          }
+        })
+        .catch(error=>{
+          res.status(500)
+          .send({message:error.message || "Error Occured while checking the existing user"});
+        })
+      } catch (error) {
+        res.status(500)
+        .send({message:error.message || "Error Occured while user sing up"});
+      }
+    },
+     /** 
+     * GET /verify/:userId/:uniquestring 
+     * user Email verificatoin
+     */
+     verifyUserEmail:(req,res)=>{
+        const {userId,uniqueString} = req.params;
+        UserVerification
+        .find({userId})
+        .then((result)=>{
+          console.log(result);
+          if(result.length>0){
+            //user verification record exist so we proceed
+            const {expiresAt} = result[0];
+            const hashedUniqueString = result[0].uniqueString;
+            
+            //checking for expired unique string
+            if(expiresAt<Date.now()){
+
+              //recored has expired so we delete it
+              UserVerification
+              .deleteOne({userId})
+              .then((result)=>{
+                UserModel
+                .deleteOne({_id:userId})
+                .then(()=>{
+                  let message = "Link has expired, Please sign up again"
+                })
+                .catch(error=>{
+                  console.log(error)
+                  let message = 'Clearing user with expired unique string failed'
+                  res.redirect(`/verified/error=true&message=${message}`);
+                })
+              })
+              .catch(error=>{
+                let message = "An error occure while clearing expired user verification record"
+                res.redirect(`/verified/error=true&message=${message}`)
+              })
+
+            }else{
+
+              //valid record exists so we validate the user string
+              //first compare the hashed unique string
+              bcrypt
+              .compare(uniqueString,hashedUniqueString)
+              .then(result=>{
+                if(result){
+                //string match
+                UserModel
+                .updateOne({_id:userId},{verified:true})
+                .then(()=>{
+                   UserVerification
+                   .deleteOne({userId})
+                   .then((result)=>{
+                      res.json({
+                        status:"SUCCESS",
+                        message:"successfully verified email"
+                      })
+                    })
+                                  
+                    .catch(error=>{
+                      console.log(error)
+                      let message = "An error occure while finalzing the successfull verificatin of user email" 
+                      res.redirect(`/verified/error=true&message=${message}`)
+                    })
+                    })
+                    .catch(error=>{
+                      console.log(error);
+                      const message = 'An error occured while updating user record to show verified'
+                      res.redirect(`/verified/error=true&message=${message}`);
+                    })
+                }else{
+                //existing record but incorrect verification detials passed
+                const message = 'invalid verification details passed, check your inbox'
+                res.redirect(`/verified/error=true&message=${message}`);
+                }
+              })
+              .catch(error=>{
+                console.log(error)
+                const message = 'An error occured while comparing the unique string'
+                res.redirect(`/verified/error=true&message=${message}`);
+              })
+            }
+          }else{
+            //user verification record doesn't exist
+           let message = "Account record doesn't exist or has been verified already, Please sign up or login in"
+           res.redirect(`/verified/error=true&message=${message}`);
+          }
+        })
+        .catch(error=>{
+          console.log(error);
+          const message = 'An error occured while checking for existing user verification recored'
+          res.redirect(`/verified/error=true&message=${message}`);
+        })
+
+    },
+     /** 
+     * GET /verified 
+     * user email id verified
+     */
+    emailVerified:async(req,res)=>{
+      res.json({
+        status:"SUCCESS",
+        message:"user email id success fully verified and now you can login"
+      })
+    },
+      /** 
+     * POST /OTPverification 
+     * user otp verification
+     */
+    OTPVerification:async (req,res)=>{
+      try{
+        let {userId,otp} = req.body;
+        if(!userId||!otp){
+          throw Error("Empty otp details are not allowed");
+        }else{
+          const userOTPVerificationRecored = await UserOTPVerification
+          .find({userId});
+          if(userOTPVerificationRecored.length<=0){
+            throw new Error(
+              "Account recored doesn't exist or has been verified already, please signup or login"
+            )
+          }else{
+            //uer otp recored exists 
+            const {expiresAt} = userOTPVerificationRecored[0];
+            const hashedOTP = userOTPVerificationRecored[0].otp;
+
+            if(expiresAt<Date.now()){
+              //ueser otp recordes has expired
+              await UserOTPVerification.deleteMany({userId});
+              throw new Error("code has expired. Please requist again");
+            }else{
+              const validOTP = await bcrypt.compare(otp,hashedOTP);
+              if(!validOTP){
+                //suplied otp is wrong
+                throw new Error("invalid data passed,check your email");
+              }else{
+                //success 
+                await UserModel.updateOne({_id:userId},{verified:true});
+                await UserOTPVerification.deleteMany({userId});
+                res.json({
+                    status:"SUCCESS",
+                    message:"User email verified successfully"
+                })
+              }
+            }
+          }
+        }
+      }catch(error){
+        res.json({
+          status:"FAILED",
+          message:error.message
+      })
+      }
+    },
+     /** 
+     * POST /user-login 
+     * user login
+     */
+     userLoginPost:async(req,res)=>{
+       try {
+         const check = await UserModel.findOne({email:req.body.email});
+         console.log(check);
+         if(!check){
+            res.render('./user/login',{title: 'Sleek Style - login',isHome:false})
+         }else{
+            //COMPARE THE HASH PASSWORD FROM THE DATABASE WITH THE PLAIN TEXT
+            const isPasswordMatch = await bcrypt.compare(req.body.password,check.password);
+            if(isPasswordMatch){
+                res.redirect('/');
+            }else{
+                res.render('./user/login',{title: 'Sleek Style - login',isHome:false})
+            }
+         }
+       } catch (error) {
+         res.status(500).send({ message:error.message || "Error Occured" });    
+       }
+     }
     }

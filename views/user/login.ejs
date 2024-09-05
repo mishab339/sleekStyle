@@ -13,20 +13,22 @@
                 </div>
                 <div class="col-md-6 right">
                      <div class="input-box">
-                        <header>Log In</header>
-                        <div class="input-field">
-                            <input type="text" name="" id="email" class="input" required autocomplete="off">
-                            <label for="email">Email</label>
-                        </div>
-                        <div class="input-field">
-                            <input type="password" name="" id="password" class="input" required>
-                            <label for="password">Password</label>
-                        </div>
-                        <div class="input-field">
-                            <input type="submit" class="submit" value="Log in">
-                        </div>
+                        <header>LOG IN</header>
+                        <form action="/user-login" method="post">
+                            <div class="input-field">
+                                <input type="text" name="email" id="email" class="input" required>
+                                <label for="email">Email</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="password" name="password" id="password" class="input" required>
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="submit" class="submit" value="Log in">
+                            </div>
+                        </form>
                         <div class="signin">
-                             <span>Don't have an account? <a href="/user-signup">Sign up Here</a></span>
+                             <span>Don't have an account?<a href="/user-signup">Sign up Here</a> <br> or <br> <a href="/forgot-password">Forgott password?</a></span>
                         </div>
                      </div>
                 </div>

@@ -13,10 +13,15 @@ app.use(express.urlencoded({extended:true}));
 app.use(expressLayout)
 app.use(express.static('public'));
 
-const indexRouter = require('./server/routes/userRoutes.js');
+//for accepting port from data
+const bodyParser = express.json
+app.use(bodyParser());
 
-app.use('/',indexRouter);
+//routes
+const userRouter = require('./server/routes/userRoutes.js');
+
+app.use('/',userRouter);
 
 app.listen(process.env.PORT||3000,()=>{
-    console.log('server started...');
+    console.log(`server started on port number ${process.env.PORT}`);
 });

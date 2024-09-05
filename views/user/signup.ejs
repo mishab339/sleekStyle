@@ -4,6 +4,9 @@
 .side-image{
     background-image: url('../localimages/signup.jpg');
 }
+#logo{
+    top: -10px;
+}
 .text p{
     color: #fff;
 }
@@ -20,29 +23,40 @@
             </div>
             <div class="col-md-6 right">
                  <div class="input-box">
-                    <header>Create account</header>
-                    <div class="input-field">
-                        <input type="text" name="" id="name" class="input" required autocomplete="off">
-                        <label for="email">Name</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="text" name="" id="email" class="input" required autocomplete="off">
-                        <label for="email">Email</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="password" name="" id="password" class="input" required>
-                        <label for="password">Password</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="password" name="" id="password" class="input" required>
-                        <label for="password">Confirm Password</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="submit" class="submit" value="Sign Up"  id="open-modal">
-                    </div>
-                    <div class="signin">
-                         <span>Already have an account? <a href="/user-login">Login Here</a></span>
-                    </div>
+                    <header>CREATE ACCOUNT</header>
+                    <form action="/user-signup" method="post">
+                        <div class="input-field" style="float: left;width: 50%;">
+                            <input type="text" name="firstname" id="name" class="input" required autocomplete="off">
+                            <label for="email">First Name</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="lastname" id="name" class="input" required autocomplete="off">
+                            <label for="email">Last Name</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="email" id="email" class="input" required autocomplete="off">
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="phone" id="phone" class="input" required autocomplete="off">
+                            <label for="phone">Mobile</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="password" name="password" id="password" class="input" required>
+                            <label for="password">Password</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="password" name="confirmpassword" id="password" class="input" required>
+                            <label for="password">Confirm Password</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="submit" class="submit" value="Sign Up"  id="open-modal">
+                        </div>
+                        <div class="signin">
+                             <span>Already have an account? <a href="/user-login">Login Here</a></span>
+                        </div>
+                    </form>
+        
                  </div>
             </div>
         </div>
@@ -67,5 +81,4 @@
         </section>
     </div>
 </div>
-
 <script src="/localejs/otp.js"></script>
