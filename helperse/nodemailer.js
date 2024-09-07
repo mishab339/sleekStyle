@@ -134,7 +134,7 @@ module.exports = {
                 }
             })
         } catch (error) {
-            res.josn({
+            res.json({
                 status:"FAILED",
                 message:error.message
             })
