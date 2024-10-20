@@ -125,16 +125,16 @@ module.exports = {
             console.log(newOTPVerification);
             await newOTPVerification.save();
             await transporter.sendMail(mailOptions);
-            res.json({
-                status:"SUCCESS",
-                message:"Verification otp email send",
-                data:{
-                    userId:_id,
-                    email
-                }
-            })
+            // res.json({
+            //     status:"SUCCESS",
+            //     message:"Verification otp email send",
+            //     data:{
+            //         userId:_id,
+            //         email
+            //     }
+            // })
         } catch (error) {
-            res.josn({
+            res.json({
                 status:"FAILED",
                 message:error.message
             })

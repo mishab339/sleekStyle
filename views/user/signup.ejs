@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="/localcss/otp.css">
 
 <style>
 .side-image{
@@ -9,6 +8,10 @@
 }
 .text p{
     color: #fff;
+}
+label.error{
+    position: absolute;
+    bottom: -10px;
 }
 </style>
 <div class="wrapper">
@@ -24,30 +27,30 @@
             <div class="col-md-6 right">
                  <div class="input-box">
                     <header>CREATE ACCOUNT</header>
-                    <form action="/user-signup" method="post">
+                    <form action="/user-signup" method="post" id="signupform">
                         <div class="input-field" style="float: left;width: 50%;">
                             <input type="text" name="firstname" id="name" class="input" required autocomplete="off">
-                            <label for="email">First Name</label>
+                            <label class="formlabel" for="email">First Name</label>
                         </div>
                         <div class="input-field">
                             <input type="text" name="lastname" id="name" class="input" required autocomplete="off">
-                            <label for="email">Last Name</label>
+                            <label class="formlabel" for="email">Last Name</label>
                         </div>
                         <div class="input-field">
                             <input type="text" name="email" id="email" class="input" required autocomplete="off">
-                            <label for="email">Email</label>
+                            <label class="formlabel" for="email">Email</label>
                         </div>
                         <div class="input-field">
                             <input type="text" name="phone" id="phone" class="input" required autocomplete="off">
-                            <label for="phone">Mobile</label>
+                            <label class="formlabel" for="phone">Mobile</label>
                         </div>
                         <div class="input-field">
                             <input type="password" name="password" id="password" class="input" required>
-                            <label for="password">Password</label>
+                            <label class="formlabel" for="password">Password</label>
                         </div>
                         <div class="input-field">
                             <input type="password" name="confirmpassword" id="password" class="input" required>
-                            <label for="password">Confirm Password</label>
+                            <label class="formlabel" for="password">Confirm Password</label>
                         </div>
                         <div class="input-field">
                             <input type="submit" class="submit" value="Sign Up"  id="open-modal">
@@ -56,29 +59,47 @@
                              <span>Already have an account? <a href="/user-login">Login Here</a></span>
                         </div>
                     </form>
-        
                  </div>
             </div>
         </div>
-        <section class="otp-modal otp-container">
-            <div class="otp-modal__container" id="modal-container">
-                <div class="otp-modal__content">
-                    <form action="" class="otp-form">
-                        <span class="otp-main-heading">Enter otp</span>
-                        <p class="otp-subheading">we have sent a verification code to your mobile number</p>
-                        <div class="input-container">
-                            <input type="text" maxlength="1" class="otp-input">
-                            <input type="text" maxlength="1" class="otp-input">
-                            <input type="text" maxlength="1" class="otp-input">
-                            <input type="text" maxlength="1" class="otp-input">
-                        </div>
-                        <a class="verify-btn" type="submit">Verify</a>
-                        <button class="exit-btn close-modal"><i class="fa-solid fa-x"></i></button>
-                        <p class="resend-note">Didn't receive the code? <a class="resend-btn">Resend code</a></p>
-                    </form> 
-                </div>
-            </div>
-        </section>
     </div>
 </div>
-<script src="/localejs/otp.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+
+ <script>
+    $("#signupform").validate({
+    rules:{
+        firstname:"required",
+        lastname:"required",
+        password:{
+            required:true,
+            minlength:6
+        },
+        confirmpassword:{
+            required:true,
+            minlength:5,
+            equalTo:"#password"
+        },
+        email:{
+            required:true,
+            email:true
+        }
+    },
+    messages:{
+     password:{
+        required:"please provide a password",
+        minlength:"your password must be atleast 6 characters"
+     },
+     confirmpassword:{
+        required:"please provide a password",
+        minlength:"your password must be atleast 6 characters",
+        equalTo:"please enter the same password as above"
+     }
+    },
+    submitHandler: function(form) {
+     form.submit();
+    }
+ });
+</script>

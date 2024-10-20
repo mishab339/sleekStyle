@@ -1,5 +1,11 @@
 require('../config/database');
 
+//create token
+const createToken = require("../../util/createToken");
+
+//jwt token
+const jwt = require("jsonwebtoken");
+
 //mongodb user model
 const UserModel = require('../model/userModel');
 
@@ -12,7 +18,7 @@ const UserOTPVerification = require("../model/userOTPVerificationModel")
 const bcrypt = require('bcrypt');
 
 //email verification funcions 
-const {sendVerificationEmail,sendOTPVerificationEmail} = require("../../helperse/nodemailer");
+const {sendVerificationEmail,sendOTPVerificationEmail} = require("../../util/nodemailer");
 
 module.exports = {    
     /**
@@ -101,12 +107,14 @@ module.exports = {
            userData.password = hashPassword;
            userData.verified = false;
            await UserModel.insertMany(userData)
-           .then((result)=>{
-
-            //handle account verification
+           .then(async (result)=>{
+            const user = result[0];
+            console.log(user)
+            res.render("./user/otp",{title: 'Sleek Style - OTP',isHome:false,user:user});
+            
+            // handle account verification
             // sendVerificationEmail(result[0],res);
             sendOTPVerificationEmail(result[0],res);
-
            })
            .catch(error=>{
               console.log(error);
@@ -238,7 +246,8 @@ module.exports = {
      */
     OTPVerification:async (req,res)=>{
       try{
-        let {userId,otp} = req.body;
+        const otp = req.body.otp.join("");
+        const {userId} = req.params;
         if(!userId||!otp){
           throw Error("Empty otp details are not allowed");
         }else{
@@ -266,10 +275,11 @@ module.exports = {
                 //success 
                 await UserModel.updateOne({_id:userId},{verified:true});
                 await UserOTPVerification.deleteMany({userId});
-                res.json({
-                    status:"SUCCESS",
-                    message:"User email verified successfully"
-                })
+                // res.json({
+                //     status:"SUCCESS",
+                //     message:"User email verified successfully"
+                // })
+                res.redirect("/")  
               }
             }
           }
@@ -287,21 +297,39 @@ module.exports = {
      */
      userLoginPost:async(req,res)=>{
        try {
-         const check = await UserModel.findOne({email:req.body.email});
-         console.log(check);
-         if(!check){
+         const {email,password} = req.body;
+         const fetchedUser = await UserModel.findOne({email});
+         console.log(fetchedUser);
+         if(!fetchedUser){
             res.render('./user/login',{title: 'Sleek Style - login',isHome:false})
          }else{
-            //COMPARE THE HASH PASSWORD FROM THE DATABASE WITH THE PLAIN TEXT
-            const isPasswordMatch = await bcrypt.compare(req.body.password,check.password);
-            if(isPasswordMatch){
-                res.redirect('/');
-            }else{
-                res.render('./user/login',{title: 'Sleek Style - login',isHome:false})
-            }
+          if(!fetchedUser.verified){
+            throw Error("Email hasn't been verified yet, check your inbox");
+          }
+          const hashedPassword = fetchedUser.password;
+          //COMPARE THE HASH PASSWORD FROM THE DATABASE WITH THE PLAIN TEXT
+          const isPasswordMatch = await bcrypt.compare(password,hashedPassword);
+          if(!isPasswordMatch){
+            throw Error("Invalid password entered!");
+          }
+          const tokenData = {userId:fetchedUser._id,email};
+          console.log(tokenData);
+          const token = await createToken(tokenData);
+          console.log(process.env.TOKEN_EXPIRY)
+          res.cookie('jwt',token,{httpOnly:true,maxAge: 1000 * 60 * 60 * 24 * 7});
+          req.session.isAuth = true;
+          console.log(req.session);
+          fetchedUser.token = token
+          console.log(fetchedUser);
+          res.redirect("/");
          }
        } catch (error) {
+        console.log(error);
          res.status(500).send({ message:error.message || "Error Occured" });    
        }
+     },
+     userLogout:async (req,res)=>{
+       res.cookie("jwt","",{maxAge:1});
+       res.redirect("/");
      }
     }
