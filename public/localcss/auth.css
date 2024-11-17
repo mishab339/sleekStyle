@@ -79,18 +79,18 @@ i{
     color: #40414a;
     margin-bottom: 20px;
 }
-.input-box .input-field label{
+.input-box .input-field .formlabel{
     position: absolute;
     top: 10px;
     left: 10px;
     pointer-events: none;
     transition: 0.5s;
 }
-.input-field .input:focus ~ label{
+.input-field .input:focus ~ .formlabel{
     top: -10px;
     font-size: 13px;
 }
-.input-field .input:valid ~ label{
+.input-field .input:valid ~ .formlabel{
     top: -10px;
     font-size: 13px;
     color: #5d5076; 
@@ -152,4 +152,15 @@ span a:hover{
         max-width: 420px;
         width: 100%;
     }
+}
+
+label.error{
+    font-weight:500;
+    display: block;
+    color: #f00;
+    font-size: 14px;
+    pointer-events: none;
+    transition: 0.5s;
+    position: relative;
+    bottom: 15px;
 }

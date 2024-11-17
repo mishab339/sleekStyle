@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /* =============== MODAL ===============  */
 
@@ -35,91 +36,23 @@
     border-radius: 1.25rem;
   }
 }
+=======
+>>>>>>> my-temporary-work
 *{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
-.otp-form{
-  width: 100%;
-  height: 100%;
-  background: rgb(255, 255, 255);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 30px;
-  gap: 20px;
-  position: relative;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.082);
-  border-radius: 15px;
-}
-.otp-main-heading{
-  font-size: 1.1rem;
-  color: rgb(15, 15, 15);
-  font-weight: 700;
-}
+/* =============== MODAL ===============  */
+.otp-modal{
+  display: grid;
+  place-items: center;
+} 
 .otp-subheading{
   font-size: 0.8em;
   color: #000;
   line-height: 17px;
   text-align: center;
-}
-.input-container{
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-}
-.otp-input{
-  background-color: rgb(228, 228, 228);
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  border: none;
-  border-radius: 7px;
-  caret-color: rgb(177, 129, 255);
-  outline: none;
-  color: rgb(44, 44, 44);
-  font-weight: 600;
-}
-.otp-input:focus,
-.otp-input:valid{
-  background-color: rgba(177, 129, 255, 0.199);
-  transition-duration: 0.3s;
-}
-.verify-btn{
-  padding: 5px;
-  width: 80%;
-  height: 35px;
-  border: none;
-  background: rgb(122, 129, 255);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  border-radius: 10px;
-  transition-duration: 0.2s;
-}
-.verify-btn:hover{
-  background-color: rgb(144, 145, 255);
-  transition-duration: 0.2s;
-}
-.exit-btn{
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.171);
-  background-color: #fff;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  border: none;
-  color: #000;
-  font-size: 1.1rem;
-  cursor: pointer;
 }
 .resend-note{
   font-size: 0.8em;
@@ -140,3 +73,86 @@
   font-weight: 700;
 }
 
+/* ==================================== */
+.otp-container{
+  width: 300px;
+  height: auto;
+  margin: 20px 0;
+  padding: 40px 30px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  transform: scale(1);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.082);
+}
+
+.otp-container h4{
+  font-size: 20px;
+  color: #121212;
+  font-family: sans-serif;
+}
+
+.otp-container .otp-form{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.otp-form .input_fields{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.input_fields input{
+  max-width: 20%;
+  height: 60px;
+  text-align: center;
+  border-radius: 5px;
+  border: none;
+  background: #f0f0f0;
+  font-size: 25px;
+}
+
+.input_fields input::-webkit-inner-spin-button,
+.input_fields input::-webkit-outer-spin-button{
+  display: none;
+}
+
+.input_fields input:focus{
+  outline: 3px solid #00b991;
+  outline-offset: 2px;
+}
+
+.otp-form .verify-btn{
+  margin-top: 25px;
+  width: 92%;
+  background: #e9d585;
+  color: #525252;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.otp-form .verify-btn.active{
+  background: #ffcc00;
+  pointer-events: auto;
+  color: #000;
+}
+
+.otp-form .verify-btn:hover{
+  background: #e6b801;
+}   

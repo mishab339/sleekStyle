@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     },
     phone:{
         type:Number,
@@ -25,7 +26,11 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    verified:Boolean
+    verified:{
+        type:Boolean,
+        default:false
+    },
+    token:String
 });
 
 const userModel = new mongoose.model("Users",userSchema);
